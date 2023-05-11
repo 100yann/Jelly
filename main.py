@@ -3,6 +3,7 @@ import datetime as dt
 from datetime import timedelta
 import tkinter as tk
 from tkinter import filedialog
+from pathlib import Path
 
 # os.getcwd() - get current directory
 # os.chdir() - change directory to specified path
@@ -36,28 +37,23 @@ def del_files():
 
 
     def init_delete():
-        root_dir = os.listdir(file_path)
-        for num, season in enumerate(root_dir):
-            if f'SEASON_{num}' in root_dir or f'season_{num}' in root_dir or f'Season_{num}' in root_dir:
-                all_episodes = os.listdir(file_path+f'/SEASON_{num}')
-                for episode in all_episodes:
-                    if "CREXXX" in episode:
-                        pass
-                    else:
+        root_dir = Path(file_path)
+        for subdir in root_dir.iterdir():
+            if 'SEASON' in subdir.name:
+                open_season = root_dir.joinpath(subdir)
+                for episode in open_season.iterdir():
+                    if 'CREXXX' not in episode.name:
+                        final_dir = root_dir / subdir / episode / '1_EXPORTS' / '1_MASTERS' / '3_FACEBOOK'
                         try:
-                            end_dir = file_path + f'/SEASON_{num}' + f'/{episode}/1_EXPORTS/1_MASTERS/3_FACEBOOK'
-                            all_exports = os.listdir(end_dir)
-                            for export in all_exports:
-                                creation_date = os.path.getctime(f'{end_dir}/{export}')
+                            for export in final_dir.iterdir():
+                                creation_date = os.path.getctime(final_dir/export)
                                 readable_date = dt.datetime.fromtimestamp(creation_date).date()
                                 if readable_date <= dt.date.today() - timedelta(days=int(user_input.get())):
-                                    try:
-                                        os.remove(f'{end_dir}/{export}')
-                                    except PermissionError:
-                                        pass
+                                    os.remove(final_dir/export)
+ 
                         except FileNotFoundError:
                             pass
-
+                            
     delete = tk.Button(
         text='Delete',
         command=init_delete
