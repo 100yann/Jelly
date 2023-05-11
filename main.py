@@ -18,7 +18,8 @@ options_label = tk.Label(
     text='Choose an option'
 )
 options_label.pack()
-
+monday_api_key = os.environ.get('MONDAY_API')
+print(monday_api_key)
 
 def del_files():
     file_path = filedialog.askdirectory()
@@ -50,7 +51,6 @@ def del_files():
                                 readable_date = dt.datetime.fromtimestamp(creation_date).date()
                                 if readable_date <= dt.date.today() - timedelta(days=int(user_input.get())):
                                     os.remove(final_dir/export)
- 
                         except FileNotFoundError:
                             pass
                             
