@@ -25,14 +25,54 @@ import json
 monday_api_key = os.environ.get('MONDAY_API')
 api_url = 'https://api.monday.com/v2'
 headers = {'Authorization': monday_api_key}
+query = '''
+{
+    items_by_multiple_column_values(
+        board_id: 1374526431,
+        column_id: "person",
+        column_values: "Stoyan Kolev") {
+            name
+            id
+            column_values(ids: "status") {
+                text additional_info
+        }     
+    }
+}
 
-# query = '{boards (ids:1374526431) {items(ids: 4154288924) {name column_values(ids: "formula7") {description}} } }'
-query = '{boards (ids:1374526431) {items(ids: 4154288924) {name column_values(ids: "person") {text} } } }'
-query = '{items_by_column_values(board_id: 1374526431, column_id: "person", column_value: "Stoyan Kolev") {id name} }'
+'''
 data = {'query' : query}
+response = requests.post(url=api_url, json=data, headers=headers)
 
-r = requests.post(url=api_url, json=data, headers=headers)
-print(r.json())
+results = json.loads(response.text)['data']['items_by_multiple_column_values']
+
+today = dt.date.today()
+for result in results:
+    item_id = result['id'] # get id
+    item_status = result['column_values'][0]['text'] # get status
+    date_changed = result['column_values'][0]['additional_info'][55:65] # get date the status was changed
+    if item_status == "PRE-EDITING" and date_changed == str(today):
+
+        new_query = '''
+        {boards (ids: 1374526431) {
+            items(ids: %s) {
+                column_values(ids: ["dropdown", "text5", "text0"]) {
+                    text
+                }
+            }
+        }
+    }
+        '''%item_id
+
+        new_data = {'query': new_query} 
+        new_response = requests.post(url=api_url, json=new_data, headers=headers) # make a new query only for the items that pass the check
+        new_results = json.loads(new_response.text)['data']['boards'][0]['items'][0]['column_values'] # get final layer of data
+        creator_name = new_results[0]['text'].split(' - ')
+        creator_id = creator_name[1] # get the creator ID
+        season_number = new_results[1]['text'] # get the season number
+        episode_number = new_results[2]['text'] # get the episode number
+        prod_id = f"CRE{creator_id}S{season_number}E{episode_number}"
+
+
 
 
 # def del_files():
