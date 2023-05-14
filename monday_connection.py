@@ -61,3 +61,42 @@ def get_items():
     return pulses_to_return
 
 
+def make_folders(path):
+    new_pulses = get_items() # call the function that will return the needed items from Monday
+    if new_pulses:
+        created_folders = []
+        creator_folder = Path(path)
+        for key, value in new_pulses.items(): # build the necessary file_ids by iterring through the returned monday items
+            name = key.split()
+            updated_name = ""
+            for word in name:
+                updated_name += word.title()
+            id = value['cre_id']
+            season = value['season_num']
+            episode = value['ep_num']
+            prod_id = f"CRE{id}S{season}E{episode}"
+            file_id = f"{prod_id}_{updated_name[0:17]}"
+            
+
+            subdirectories = [subdir for subdir in creator_folder.iterdir() if subdir.is_dir()]
+            if subdirectories and creator_folder/f"SEASON_{season}" in subdirectories: # check if the "SEASON_X" folder already exists
+                    try:
+                        create_path = creator_folder / f"SEASON_{season}" / f"{file_id}" 
+                        create_path.mkdir()
+                    except FileExistsError:
+                        print(f'The folder {file_id} already exists')
+            else: # if it doesn't exist - create a season folder
+                create_season = creator_folder / f"SEASON_{season}"
+                create_season.mkdir()
+                create_path = creator_folder / f"SEASON_{season}" / f"{file_id}"
+                create_path.mkdir()
+            created_folders.append([file_id, create_path])
+        return created_folders
+    else:
+        return 0
+
+
+
+                        
+
+
