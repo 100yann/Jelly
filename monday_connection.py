@@ -33,31 +33,32 @@ def get_items():
     today = dt.date.today()
     pulses_to_return = {}
     for result in results:
-        item_name = result['name'] # get name
-        item_id = result['id'] # get id
         item_status = result['column_values'][0]['text'] # get status
-        date_changed = result['column_values'][0]['additional_info'][55:65] # get date the status was changed
-        if item_status == "PRE-EDITING":
+        if item_status== "PRE-EDITING":
+            date_changed = result['column_values'][0]['additional_info'][55:65] # get date the status was changed
+            if date_changed == str(today):
+                item_name = result['name'] # get name
+                item_id = result['id'] # get id
 
-            new_query = '''
-            {boards (ids: 1374526431) {
-                items(ids: %s) {
-                    column_values(ids: ["dropdown", "text5", "text0"]) {
-                        text
+                new_query = '''
+                {boards (ids: 1374526431) {
+                    items(ids: %s) {
+                        column_values(ids: ["dropdown", "text5", "text0"]) {
+                            text
+                        }
                     }
                 }
             }
-        }
-            '''%item_id
+                '''%item_id
 
-            new_data = {'query': new_query} 
-            new_response = requests.post(url=api_url, json=new_data, headers=headers) # make a new query only for the items that pass the check
-            new_results = json.loads(new_response.text)['data']['boards'][0]['items'][0]['column_values'] # get final layer of data
-            creator_name = new_results[0]['text'].split(' - ')
-            creator_id = creator_name[1] # get the creator ID
-            season_number = new_results[1]['text'] # get the season number
-            episode_number = new_results[2]['text'] # get the episode number
-            pulses_to_return[item_name] = dict(cre_id = creator_id, season_num = season_number, ep_num = episode_number)
+                new_data = {'query': new_query} 
+                new_response = requests.post(url=api_url, json=new_data, headers=headers) # make a new query only for the items that pass the check
+                new_results = json.loads(new_response.text)['data']['boards'][0]['items'][0]['column_values'] # get final layer of data
+                creator_name = new_results[0]['text'].split(' - ')
+                creator_id = creator_name[1] # get the creator ID
+                season_number = new_results[1]['text'] # get the season number
+                episode_number = new_results[2]['text'] # get the episode number
+                pulses_to_return[item_name] = dict(cre_id = creator_id, season_num = season_number, ep_num = episode_number)
     return pulses_to_return
 
 
