@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
 from monday_connection import make_folders
-from remove_items import deleteExports
+from remove_items import deleteFiles
 
 
 # os.getcwd() - get current directory
@@ -40,9 +40,18 @@ def del_files():
     )
     user_input.pack()
 
-    delete = tk.Button(
-    text='Delete',
-    command= lambda: deleteExports(file_path, user_input.get())
+    del_option1 = tk.Button(
+        text='Delete Exports',
+        command= lambda: deleteFiles(path=file_path, 
+                                     date=user_input.get(), 
+                                     type='exports')
+    ).pack()
+
+    del_option2 = tk.Button(
+        text='Delete Preedits',
+        command=lambda: deleteFiles(path=file_path,
+                                    date=user_input.get(),
+                                    type='preedits')
     ).pack()
 
 
@@ -59,7 +68,7 @@ def new_item_folder():
     
 
 del_exports = tk.Button(
-    text='Delete Exported Files',
+    text='Delete Files',
     command=del_files
 )
 del_exports.pack()
