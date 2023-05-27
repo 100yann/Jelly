@@ -60,7 +60,7 @@ def new_item_folder():
     del_exports.destroy()
     file_path = filedialog.askdirectory()
     new_folders = make_folders(file_path)
-    if new_folders > 0:
+    if new_folders:
         for item in new_folders:
             print(f'The folder {item[0]} was created in {item[1]}')
     else:
