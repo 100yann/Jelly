@@ -2,6 +2,7 @@ import os
 import datetime as dt
 from datetime import timedelta
 import tkinter as tk
+import customtkinter as ctk
 from tkinter import filedialog
 from pathlib import Path
 from monday_connection import make_folders
@@ -14,40 +15,59 @@ from remove_items import deleteFiles
 # os.remove(file) - removes file in current directory
 # os.path.getctime(file dir) - returns time of creation of specified file
 
-root=tk.Tk()
-root.geometry('1280x720')
-root.config(pady=50)
-options_label = tk.Label(
-    text='Choose an option'
-)
-options_label.pack()
+ctk.set_default_color_theme("yellow.json")
+root=ctk.CTk()
+root.geometry('720x480')
+root.config(padx=50, pady=50, background='light goldenrod')
+root.resizable(False, False)
 
+title_label = ctk.CTkLabel(
+    root,
+    bg_color='light goldenrod',
+    font=('Josefin Sans Semibold', 55),
+    text_color='black',
+    text='JELLYAUTOmate'
+).pack()
+
+description = ctk.CTkTextbox(
+    root,
+    width=460,
+    height=100,
+    corner_radius=0,
+    fg_color='light goldenrod',
+    font=('Josefin Sans Light', 20),
+    text_color='black',
+    wrap='word')
+
+description.insert('0.0', 'Tired of making properly-named folders or old files taking up too much disk space? Tire no longer!')
+description.configure(state='disabled')
+description.pack()
 
 def del_files():
     file_path = filedialog.askdirectory()
-    options_label.destroy()
-    del_exports.destroy()
-    new_folder.destroy()
-    instructions = tk.Label(
+    button_frame.destroy()
+    instructions = ctk.CTkLabel(
         root,
         text='Files older than X days should be deleted'
     )
     instructions.pack()
 
-    user_input = tk.Entry(
+    user_input = ctk.CTkEntry(
         root,
         width=100
     )
     user_input.pack()
 
-    del_option1 = tk.Button(
+    del_option1 = ctk.CTkButton(
+        root,
         text='Delete Exports',
         command= lambda: deleteFiles(path=file_path, 
                                      date=user_input.get(), 
                                      type='exports')
     ).pack()
 
-    del_option2 = tk.Button(
+    del_option2 = ctk.CTkButton(
+        root,
         text='Delete Preedits',
         command=lambda: deleteFiles(path=file_path,
                                     date=user_input.get(),
@@ -56,8 +76,6 @@ def del_files():
 
 
 def new_item_folder():
-    options_label.destroy()
-    del_exports.destroy()
     file_path = filedialog.askdirectory()
     new_folders = make_folders(file_path)
     if new_folders:
@@ -66,18 +84,26 @@ def new_item_folder():
     else:
         print("No new items were found")
     
+'''Make a frame to fit the 2 buttons in the centre'''   
+button_frame = ctk.CTkFrame(root, fg_color='light goldenrod')
+button_frame.pack()
 
-del_exports = tk.Button(
+del_exports = ctk.CTkButton(
+    button_frame,
     text='Delete Files',
-    command=del_files
-)
-del_exports.pack()
+    command=del_files,
+    bg_color='light goldenrod'
 
-new_folder = tk.Button(
-    text='Make a New Item Folder',
-    command=new_item_folder
 )
-new_folder.pack()
+del_exports.grid(row=0, column=0)
+
+new_folder = ctk.CTkButton(
+    button_frame,
+    text='Make a New Item Folder',
+    command=new_item_folder,
+    bg_color='light goldenrod'
+)
+new_folder.grid(row=0, column=1)
 
 
 root.mainloop()
