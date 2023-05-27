@@ -1,10 +1,11 @@
 from pathlib import Path
+import shutil
 import datetime as dt
 import requests
 import json
 import os
 
-
+SOURCE_FOLDER = Path('FOLDER_STRUCTURE/CREXXXS0E000_NAMEOFEPISODE')
 monday_api_key = os.environ.get('MONDAY_API')
 api_url = 'https://api.monday.com/v2'
 headers = {'Authorization': monday_api_key}
@@ -82,22 +83,36 @@ def make_folders(path):
             subdirectories = [subdir for subdir in creator_folder.iterdir() if subdir.is_dir()]
             if subdirectories and creator_folder/f"SEASON_{season}" in subdirectories: # check if the "SEASON_X" folder already exists
                     try:
-                        create_path = creator_folder / f"SEASON_{season}" / f"{file_id}" 
-                        create_path.mkdir()
+                        creation_path = creator_folder / f"SEASON_{season}"
+                        copySourceFolder(file_id, creation_path)
                     except FileExistsError:
                         print(f'The folder {file_id} already exists')
             else: # if it doesn't exist - create a season folder
                 create_season = creator_folder / f"SEASON_{season}"
                 create_season.mkdir()
-                create_path = creator_folder / f"SEASON_{season}" / f"{file_id}"
-                create_path.mkdir()
-            created_folders.append([file_id, create_path])
+                creation_path = creator_folder / f"SEASON_{season}"
+                copySourceFolder(file_id, creation_path)
+            created_folders.append([file_id, creation_path])
         return created_folders
     else:
         return 0
 
 
+def copySourceFolder(file_id, path):
+    temp_source = SOURCE_FOLDER
+    shutil.copytree(SOURCE_FOLDER, path / file_id)
+    print(Path(path / file_id / '2_PROJECTS' / '1_PREMIERE_PROJECT' / 'CREXXXS0E000_NAMEOFEPISODE.prproj'))
+    rename_premiere = Path(path / file_id / '2_PROJECTS' / '1_PREMIERE_PROJECT' / 'CREXXXS0E000_NAMEOFEPISODE.prproj')
+    rename_premiere.rename(Path(rename_premiere.parent, f'{file_id}.prproj'))
+    rename_photoshop = Path(path / file_id / '2_PROJECTS' / '2_PHOTOSHOP_PROJECT')
+    for file in rename_photoshop.iterdir():
+        filename = file.name.replace('CREXXXS0E000_NAMEOFEPISODE', file_id)
+        file.rename(Path(file.parent, filename))
 
+    
+
+
+    
                         
 
 
