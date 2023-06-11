@@ -11,12 +11,12 @@ api_url = 'https://api.monday.com/v2'
 headers = {'Authorization': monday_api_key}
 
 def get_items(name):
-    query = '''
-    {
+
+    query = '''query ($username: [String]!) {
         items_by_multiple_column_values(
             board_id: 1374526431,
             column_id: "person",
-            column_values: "{name}") {
+            column_values:$username) {
                 name
                 id
                 column_values(ids: "status") {
@@ -24,11 +24,10 @@ def get_items(name):
             }     
         }
     }
-
     '''
-    data = {'query' : query}
+    vars = {'username': name}
+    data = {'query': query, 'variables': vars}
     response = requests.post(url=api_url, json=data, headers=headers)
-
     results = json.loads(response.text)['data']['items_by_multiple_column_values']
 
     today = dt.date.today()
