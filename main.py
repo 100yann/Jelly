@@ -1,6 +1,3 @@
-import os
-import datetime as dt
-from datetime import timedelta
 import tkinter as tk
 import customtkinter as ctk
 from tkinter import filedialog
