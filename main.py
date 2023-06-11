@@ -9,13 +9,7 @@ from monday_connection import make_folders
 from remove_items import deleteFiles
 
 
-# os.getcwd() - get current directory
-# os.chdir() - change directory to specified path
-# os.listdir() - list all files and subdirectories
-# os.remove(file) - removes file in current directory
-# os.path.getctime(file dir) - returns time of creation of specified file
 
-ctk.set_default_color_theme("yellow.json")
 root=ctk.CTk()
 root.geometry('720x480')
 root.config(padx=50, pady=50, background='light goldenrod')
@@ -24,7 +18,7 @@ root.resizable(False, False)
 title_label = ctk.CTkLabel(
     root,
     bg_color='light goldenrod',
-    font=('Josefin Sans Semibold', 55),
+    font=('Helvetica', 55),
     text_color='black',
     text='JELLYAUTOmate'
 ).pack()
@@ -35,13 +29,14 @@ description = ctk.CTkTextbox(
     height=100,
     corner_radius=0,
     fg_color='light goldenrod',
-    font=('Josefin Sans Light', 20),
+    font=('Tahoma', 20),
     text_color='black',
     wrap='word')
 
 description.insert('0.0', 'Tired of making properly-named folders or old files taking up too much disk space? Tire no longer!')
 description.configure(state='disabled')
 description.pack()
+
 
 def del_files():
     file_path = filedialog.askdirectory()
@@ -75,9 +70,18 @@ def del_files():
     ).pack()
 
 
-def new_item_folder():
+
+def enter_name():
+    button_frame.destroy()
+    name_entry = ctk.CTkEntry(root, width=150, placeholder_text='FirstName LastName', fg_color='light goldenrod')
+    name_entry.pack(pady=10)
+    folder_start = ctk.CTkButton(root, width=50, text="GO", command=lambda: new_item_folder(name_entry.get()))
+    folder_start.pack()
+
+
+def new_item_folder(name):
     file_path = filedialog.askdirectory()
-    new_folders = make_folders(file_path)
+    new_folders = make_folders(file_path, name)
     if new_folders:
         for item in new_folders:
             print(f'The folder {item[0]} was created in {item[1]}')
@@ -100,7 +104,7 @@ del_exports.grid(row=0, column=0)
 new_folder = ctk.CTkButton(
     button_frame,
     text='Make a New Item Folder',
-    command=new_item_folder,
+    command=enter_name,
     bg_color='light goldenrod'
 )
 new_folder.grid(row=0, column=1)

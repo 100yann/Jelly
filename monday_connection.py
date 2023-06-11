@@ -10,13 +10,13 @@ monday_api_key = os.environ.get('MONDAY_API')
 api_url = 'https://api.monday.com/v2'
 headers = {'Authorization': monday_api_key}
 
-def get_items():
+def get_items(name):
     query = '''
     {
         items_by_multiple_column_values(
             board_id: 1374526431,
             column_id: "person",
-            column_values: "Stoyan Kolev") {
+            column_values: "{name}") {
                 name
                 id
                 column_values(ids: "status") {
@@ -63,8 +63,8 @@ def get_items():
     return pulses_to_return
 
 
-def make_folders(path):
-    new_pulses = get_items() # call the function that will return the needed items from Monday
+def make_folders(path, name):
+    new_pulses = get_items(name) # call the function that will return the needed items from Monday
     if new_pulses:
         created_folders = []
         creator_folder = Path(path)
