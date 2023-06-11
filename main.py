@@ -9,33 +9,36 @@ from monday_connection import make_folders
 from remove_items import deleteFiles
 
 
+ctk.set_default_color_theme("STYLES/style.json")
 
 root=ctk.CTk()
 root.geometry('720x480')
 root.config(padx=50, pady=50, background='light goldenrod')
 root.resizable(False, False)
 
+
 title_label = ctk.CTkLabel(
     root,
     bg_color='light goldenrod',
-    font=('Helvetica', 55),
+    font=('Helvetica', 60, 'bold'),
     text_color='black',
     text='JELLYAUTOmate'
-).pack()
+).pack(pady=(50,0))
 
-description = ctk.CTkTextbox(
-    root,
-    width=460,
-    height=100,
-    corner_radius=0,
-    fg_color='light goldenrod',
-    font=('Tahoma', 20),
-    text_color='black',
-    wrap='word')
+description = tk.Text(root, 
+                      bg='light goldenrod',
+                      fg='black',
+                      width=40,
+                      height=3,
+                      font=('Tahoma', 17),
+                      wrap='word',
+                      borderwidth=0)
 
-description.insert('0.0', 'Tired of making properly-named folders or old files taking up too much disk space? Tire no longer!')
+description.tag_configure('center', justify='center')
+description.insert('1.0', 'Tired of making properly-named folders or old files\ntaking up too much disk space?\nTire no longer!')
+description.tag_add('center', '1.0', 'end')
 description.configure(state='disabled')
-description.pack()
+description.pack(pady=(5, 35))
 
 
 def del_files():
@@ -43,9 +46,11 @@ def del_files():
     button_frame.destroy()
     instructions = ctk.CTkLabel(
         root,
-        text='Files older than X days should be deleted'
+        text='Files older than X days should be deleted',
+        font=('Helvetica', 15),
+        text_color='black',
     )
-    instructions.pack()
+    instructions.pack(pady=(0, 5))
 
     user_input = ctk.CTkEntry(
         root,
@@ -53,27 +58,29 @@ def del_files():
     )
     user_input.pack()
 
+    del_frame = ctk.CTkFrame(root, fg_color='light goldenrod')
+    del_frame.pack(pady=10)
     del_option1 = ctk.CTkButton(
-        root,
+        del_frame,
         text='Delete Exports',
         command= lambda: deleteFiles(path=file_path, 
                                      date=user_input.get(), 
                                      type='exports')
-    ).pack()
+    ).grid(row=0, column=0, padx=5, pady=5)
 
     del_option2 = ctk.CTkButton(
-        root,
+        del_frame,
         text='Delete Preedits',
         command=lambda: deleteFiles(path=file_path,
                                     date=user_input.get(),
                                     type='preedits')
-    ).pack()
+    ).grid(row=0, column=1, padx=5, pady=5)
 
 
 
 def enter_name():
     button_frame.destroy()
-    name_entry = ctk.CTkEntry(root, width=150, placeholder_text='FirstName LastName', fg_color='light goldenrod')
+    name_entry = ctk.CTkEntry(root, width=250, height=35, placeholder_text='FirstName LastName')
     name_entry.pack(pady=10)
     folder_start = ctk.CTkButton(root, width=50, text="GO", command=lambda: new_item_folder(name_entry.get()))
     folder_start.pack()
@@ -99,7 +106,7 @@ del_exports = ctk.CTkButton(
     bg_color='light goldenrod'
 
 )
-del_exports.grid(row=0, column=0)
+del_exports.grid(row=0, column=0, padx=5)
 
 new_folder = ctk.CTkButton(
     button_frame,
@@ -107,7 +114,7 @@ new_folder = ctk.CTkButton(
     command=enter_name,
     bg_color='light goldenrod'
 )
-new_folder.grid(row=0, column=1)
+new_folder.grid(row=0, column=1, padx=5)
 
 
 root.mainloop()
